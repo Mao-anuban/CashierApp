@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เครื่องคิดเงินร้านค้า (เวอร์ชันมือถือ)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      margin: 0; padding: 3vw;
+      background: #f8f9fa;
+      text-align: center;
+    }
+    h2 { margin-bottom: 3vw; color: #333; font-size: 6vw; }
+    .card {
+      background: white; padding: 4vw; margin-bottom: 3vw;
+      border-radius: 4vw; box-shadow: 0 1vw 3vw rgba(0,0,0,0.12);
+    }
+    input {
+      font-size: 5vw; padding: 3vw; margin: 2vw 0;
+      width: 95%; max-width: 400px;
+      border: 2px solid #ccc; border-radius: 3vw;
+      text-align: center;
+    }
+    button {
+      font-size: 5vw; padding: 3vw; margin: 2vw 0;
+      border: none; border-radius: 3vw;
+      cursor: pointer; width: 95%; max-width: 400px;
+      transition: 0.2s;
+    }
+    button.add-btn { background: #007bff; color: white; }
+    button.add-btn:hover { background: #0056b3; }
+    button.clear-btn { background: #6c757d; color: white; }
+    button.clear-btn:hover { background: #494f54; }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 1.5vw;
+      background: white; border-radius: 3vw; overflow: hidden;
+      font-size: 4.5vw;
+      text-align: left;
+    }
+    th, td {
+      padding: 2vw; border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th { background: #007bff; color: white; font-size: 4.5vw; }
+    tr:last-child td { border-bottom: none; }
+    .delete-btn {
+      background: #dc3545; padding: 1.5vw 3vw; font-size: 4vw;
+      border-radius: 2vw; color: white; cursor: pointer;
+    }
+    .delete-btn:hover { background: #a71d2a; }
+    #total {
+      font-size: 5vw; margin-top: 3vw; font-weight: bold; color: #28a745;
+    }
+    #change {
+      font-size: 4.5vw; margin-top: 2vw; font-weight: bold; color: #ff5722;
+    }
+    #itemCount {
+      font-size: 3vw; margin-top: 1vw; font-weight: normal; color: #333;
+      text-align: left;
+    }
+
+    @media (min-width: 600px) {
+      h2 { font-size: 2em; }
+      input, button { font-size: 1.2em; padding: 12px; }
+      table { font-size: 1.1em; }
+      #total { font-size: 1.6em; }
+      #change { font-size: 1.4em; }
+      #itemCount { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <h2>📦 เครื่องคิดเงินร้านค้า</h2>
+
+  <div class="card">
+    <input type="number" id="weightInput" step="0.01" placeholder="น้ำหนัก (กก.)">
+    <input type="number" id="priceInput" step="0.01" placeholder="ราคาต่อกก. (บาท)">
+    <input type="number" id="manualSumInput" step="0.01" placeholder="ยอดรวม (บาท) กรอกได้">
+    <button class="add-btn" onclick="addRow()">➕ เพิ่มสินค้า</button>
+    <button class="clear-btn" onclick="clearAll()">🗑️ ล้างบิลทั้งหมด</button>
+  </div>
+
+  <div id="itemCount">รายการทั้งหมด: 0 รายการ</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>น้ำหนัก (กก.)</th>
+        <th>ราคา/กก.</th>
+        <th>รวม (บาท)</th>
+        <th>ลบ</th>
+      </tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+
+  <div id="total">รวมยอดทั้งหมด: 0 บาท</div>
+
+  <div class="card">
+    <input type="number" id="customerInput" step="0.01" placeholder="รับเงินจากลูกค้า (บาท)" oninput="calculateChange()">
+    <div id="change">เงินทอน: 0 บาท</div>
+  </div>
+
+  <script>
+    let total = 0;
+
+    function formatNumber(val, digits = 2) {
+      return isNaN(val) ? "-" : val.toFixed(digits);
+    }
+
+    function updateTotal() {
+      document.getElementById("total").innerText = "รวมยอดทั้งหมด: " + Math.ceil(total) + " บาท";
+    }
+
+    function updateItemCount() {
+      let count = document.getElementById("list").rows.length;
+      document.getElementById("itemCount").innerText = "รายการทั้งหมด: " + count + " รายการ";
+    }
+
+    function resetInputs() {
+      document.getElementById("weightInput").value = "";
+      document.getElementById("priceInput").value = "";
+      document.getElementById("manualSumInput").value = "";
+    }
+
+    function addRow() {
+      let weight = parseFloat(document.getElementById("weightInput").value);
+      let pricePerKg = parseFloat(document.getElementById("priceInput").value);
+      let manualSum = parseFloat(document.getElementById("manualSumInput").value);
+
+      let sum;
+      if (!isNaN(manualSum) && manualSum > 0) {
+        sum = manualSum;
+      } else {
+        if (!weight || weight <= 0) weight = NaN;
+        if (!pricePerKg || pricePerKg <= 0) pricePerKg = NaN;
+        sum = Math.ceil((weight || 0) * (pricePerKg || 0));
+      }
+
+      let row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${formatNumber(weight)}</td>
+        <td>${formatNumber(pricePerKg)}</td>
+        <td>${sum}</td>
+        <td><button class="delete-btn" onclick="deleteRow(this, ${sum})">ลบ</button></td>
+      `;
+      document.getElementById("list").appendChild(row);
+      total += sum;
+
+      updateTotal();
+      updateItemCount();
+      resetInputs();
+    }
+
+    function deleteRow(btn, sum) {
+      total -= sum;
+      btn.closest("tr").remove();
+      updateTotal();
+      updateItemCount();
+      calculateChange();
+    }
+
+    function clearAll() {
+      document.getElementById("list").innerHTML = "";
+      total = 0;
+      updateTotal();
+      updateItemCount();
+      document.getElementById("customerInput").value = "";
+      document.getElementById("change").innerText = "เงินทอน: 0 บาท";
+      resetInputs();
+    }
+
+    function calculateChange() {
+      let customerMoney = parseFloat(document.getElementById("customerInput").value) || 0;
+      let change = customerMoney - Math.ceil(total);
+      if (change < 0) {
+        document.getElementById("change").innerText = "เงินทอน: รับเงินไม่พอ!";
+      } else {
+        document.getElementById("change").innerText = "เงินทอน: " + change + " บาท";
+      }
+    }
+  </script>
+</body>
+</html>

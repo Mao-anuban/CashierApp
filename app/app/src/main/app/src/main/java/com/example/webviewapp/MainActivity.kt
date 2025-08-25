@@ -56,26 +56,4 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-}            mediaPlaybackRequiresUserGesture = true
-        }
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldInterceptRequest(
-                view: WebView,
-                request: WebResourceRequest
-            ): WebResourceResponse? {
-                return assetLoader.shouldInterceptRequest(request.url)
-            }
-        }
-
-        webView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html")
-    }
-
-    override fun onBackPressed() {
-        if (this::webView.isInitialized && webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
 }

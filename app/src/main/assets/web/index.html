@@ -5,74 +5,26 @@
   <title>เครื่องคิดเงินร้านค้า (เวอร์ชันมือถือ)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      margin: 0; padding: 3vw;
-      background: #f8f9fa;
-      text-align: center;
-    }
+    body {font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 3vw; background: #f8f9fa; text-align: center;}
     h2 { margin-bottom: 3vw; color: #333; font-size: 6vw; }
-    .card {
-      background: white; padding: 4vw; margin-bottom: 3vw;
-      border-radius: 4vw; box-shadow: 0 1vw 3vw rgba(0,0,0,0.12);
-    }
-    input {
-      font-size: 5vw; padding: 3vw; margin: 2vw 0;
-      width: 95%; max-width: 400px;
-      border: 2px solid #ccc; border-radius: 3vw;
-      text-align: center;
-    }
-    button {
-      font-size: 5vw; padding: 3vw; margin: 2vw 0;
-      border: none; border-radius: 3vw;
-      cursor: pointer; width: 95%; max-width: 400px;
-      transition: 0.2s;
-    }
-    button.add-btn { background: #007bff; color: white; }
-    button.add-btn:hover { background: #0056b3; }
-    button.clear-btn { background: #6c757d; color: white; }
-    button.clear-btn:hover { background: #494f54; }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 1.5vw;
-      background: white; border-radius: 3vw; overflow: hidden;
-      font-size: 4.5vw;
-      text-align: left;
-    }
-    th, td {
-      padding: 2vw; border-bottom: 1px solid #eee;
-      text-align: left;
-    }
+    .card { background: white; padding: 4vw; margin-bottom: 3vw; border-radius: 4vw; box-shadow: 0 1vw 3vw rgba(0,0,0,0.12); }
+    input { font-size: 5vw; padding: 3vw; margin: 2vw 0; width: 95%; max-width: 400px; border: 2px solid #ccc; border-radius: 3vw; text-align: center; }
+    button { font-size: 5vw; padding: 3vw; margin: 2vw 0; border: none; border-radius: 3vw; cursor: pointer; width: 95%; max-width: 400px; transition: 0.2s; }
+    button.add-btn { background: #007bff; color: white; } button.add-btn:hover { background: #0056b3; }
+    button.clear-btn { background: #6c757d; color: white; } button.clear-btn:hover { background: #494f54; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1.5vw; background: white; border-radius: 3vw; overflow: hidden; font-size: 4.5vw; text-align: left; }
+    th, td { padding: 2vw; border-bottom: 1px solid #eee; text-align: left; }
     th { background: #007bff; color: white; font-size: 4.5vw; }
     tr:last-child td { border-bottom: none; }
-    .delete-btn {
-      background: #dc3545; padding: 1.5vw 3vw; font-size: 4vw;
-      border-radius: 2vw; color: white; cursor: pointer;
-    }
+    .delete-btn { background: #dc3545; padding: 1.5vw 3vw; font-size: 4vw; border-radius: 2vw; color: white; cursor: pointer; }
     .delete-btn:hover { background: #a71d2a; }
-    #total {
-      font-size: 5vw; margin-top: 3vw; font-weight: bold; color: #28a745;
-    }
-    #change {
-      font-size: 4.5vw; margin-top: 2vw; font-weight: bold; color: #ff5722;
-    }
-    #itemCount {
-      font-size: 3vw; margin-top: 1vw; font-weight: normal; color: #333;
-      text-align: left;
-    }
-
-    @media (min-width: 600px) {
-      h2 { font-size: 2em; }
-      input, button { font-size: 1.2em; padding: 12px; }
-      table { font-size: 1.1em; }
-      #total { font-size: 1.6em; }
-      #change { font-size: 1.4em; }
-      #itemCount { font-size: 1em; }
-    }
+    #total { font-size: 5vw; margin-top: 3vw; font-weight: bold; color: #28a745; }
+    #change { font-size: 4.5vw; margin-top: 2vw; font-weight: bold; color: #ff5722; }
+    #itemCount { font-size: 3vw; margin-top: 1vw; font-weight: normal; color: #333; text-align: left; }
   </style>
 </head>
 <body>
   <h2>📦 เครื่องคิดเงินร้านค้า</h2>
-
   <div class="card">
     <input type="number" id="weightInput" step="0.01" placeholder="น้ำหนัก (กก.)">
     <input type="number" id="priceInput" step="0.01" placeholder="ราคาต่อกก. (บาท)">
@@ -133,8 +85,6 @@
       if (!isNaN(manualSum) && manualSum > 0) {
         sum = manualSum;
       } else {
-        if (!weight || weight <= 0) weight = NaN;
-        if (!pricePerKg || pricePerKg <= 0) pricePerKg = NaN;
         sum = Math.ceil((weight || 0) * (pricePerKg || 0));
       }
 
@@ -143,11 +93,10 @@
         <td>${formatNumber(weight)}</td>
         <td>${formatNumber(pricePerKg)}</td>
         <td>${sum}</td>
-        <td><button class="delete-btn" onclick="deleteRow(this, ${sum})">ลบ</button></td>
-      `;
+        <td><button class="delete-btn" onclick="deleteRow(this, ${sum})">ลบ</button></td>`;
       document.getElementById("list").appendChild(row);
-      total += sum;
 
+      total += sum;
       updateTotal();
       updateItemCount();
       resetInputs();
@@ -174,11 +123,9 @@
     function calculateChange() {
       let customerMoney = parseFloat(document.getElementById("customerInput").value) || 0;
       let change = customerMoney - Math.ceil(total);
-      if (change < 0) {
-        document.getElementById("change").innerText = "เงินทอน: รับเงินไม่พอ!";
-      } else {
-        document.getElementById("change").innerText = "เงินทอน: " + change + " บาท";
-      }
+      document.getElementById("change").innerText = change < 0
+        ? "เงินทอน: รับเงินไม่พอ!"
+        : "เงินทอน: " + change + " บาท";
     }
   </script>
 </body>
